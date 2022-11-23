@@ -1,5 +1,6 @@
 package com.ada.gameshop.model;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,7 +23,7 @@ import java.util.List;
 @AllArgsConstructor
 //@RequiredArgsConstructor
 @Builder
-@Table(name = "costumer")
+@Table(name = "customer")
 public class Customer {
 
     @javax.persistence.Id
@@ -37,16 +38,8 @@ public class Customer {
     private String email;
     @Column(nullable = false)
     private String telephone;
-    @Column(nullable = false)
-    private int orderUSer;
     @OneToMany
-    private List<Order> orders;
+    @JsonAlias("transaction")
+    private List<Transaction> transactions;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
-    }
 }

@@ -27,8 +27,7 @@ public class CustomerService {
                             .lastName(newCustomer.getLastName())
                             .email(newCustomer.getEmail())
                             .telephone(newCustomer.getTelephone())
-                            .orderUSer(newCustomer.getOrderUser())
-                            .orders(new ArrayList<>())
+                            .transactions(new ArrayList<>())
                             .build());
         } else {
             log.warn("Employee already registered");
@@ -42,8 +41,10 @@ public class CustomerService {
         }
     }
 
-    public List<Customer> retrieveAll() {
-        return customerRepository.findAll();
+    public List<Customer> findAll() {
+        List<Customer> customers = new ArrayList<>();
+        customerRepository.findAll().forEach(customers::add);
+        return customers;
     }
 
 }

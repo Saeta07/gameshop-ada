@@ -1,6 +1,7 @@
 package com.ada.gameshop.controller;
 
 import com.ada.gameshop.dto.CustomerDTO;
+import com.ada.gameshop.model.Customer;
 import com.ada.gameshop.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "customer")
@@ -28,9 +31,8 @@ public class CustomerController {
     }
 
     @GetMapping
-    public ResponseEntity retrieve() {
-
-        return new ResponseEntity(customerService.retrieveAll(), HttpStatus.OK);
+    public ResponseEntity <List<Customer>> findAll() {
+        return new ResponseEntity(customerService.findAll(), HttpStatus.OK);
     }
 
 }
