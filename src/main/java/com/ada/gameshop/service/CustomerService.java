@@ -1,14 +1,13 @@
 package com.ada.gameshop.service;
 
 import com.ada.gameshop.dto.CustomerDTO;
-import com.ada.gameshop.exception.UserNotFoundException;
 import com.ada.gameshop.model.Customer;
 import com.ada.gameshop.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -16,7 +15,21 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CustomerService {
 
+    @Autowired
     private CustomerRepository customerRepository;
+
+    @Autowired
+    public CustomerService(CustomerRepository customerRepository) {
+        this.customerRepository = customerRepository;
+    }
+
+    public List<Customer> getCustomers() {
+        return customerRepository.findAll();
+    }
+
+    public Customer saveCustomer(Customer customer) {
+        return customerRepository.save(customer);
+    }
 
     public Customer addNewCustomer(final CustomerDTO newCustomer) {
         if (!customerRepository.existsById(newCustomer.getCustomerId())) {
@@ -27,24 +40,11 @@ public class CustomerService {
                             .lastName(newCustomer.getLastName())
                             .email(newCustomer.getEmail())
                             .telephone(newCustomer.getTelephone())
-                            .transactions(new ArrayList<>())
                             .build());
         } else {
             log.warn("Employee already registered");
             throw new IllegalStateException(newCustomer.getName() + " is already registered");
         }
-    }
-
-    private void checkForExistingPerson(Long id) {
-        if (customerRepository.existsById(id)) {
-            throw new UserNotFoundException();
-        }
-    }
-
-    public List<Customer> findAll() {
-        List<Customer> customers = new ArrayList<>();
-        customerRepository.findAll().forEach(customers::add);
-        return customers;
     }
 
 }

@@ -2,6 +2,7 @@ package com.ada.gameshop.dto;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,6 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 public class CustomerDTO {
 
     @JsonAlias("id")
@@ -19,9 +21,4 @@ public class CustomerDTO {
     private String lastName;
     private String email;
     private String telephone;
-    @JsonAlias("order_user")
-    private int orderUser;
-    @JsonAlias("order_id")
-    private int orderId;
-
 }

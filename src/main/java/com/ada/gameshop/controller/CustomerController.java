@@ -1,6 +1,7 @@
 package com.ada.gameshop.controller;
 
 import com.ada.gameshop.dto.CustomerDTO;
+import com.ada.gameshop.exception.UserNotFoundException;
 import com.ada.gameshop.model.Customer;
 import com.ada.gameshop.service.CustomerService;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,13 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
-    @PostMapping
+    @PostMapping("/save")
+    public Customer saveCustomer(
+            @RequestBody Customer customer) {
+        return customerService.saveCustomer(customer);
+    }
+
+    @PostMapping("/save1")
     public final ResponseEntity<?> addUser(@RequestBody final CustomerDTO newCustomer) {
         try {
             return new ResponseEntity<>(customerService.addNewCustomer(newCustomer), HttpStatus.OK);
@@ -30,11 +37,15 @@ public class CustomerController {
         }
     }
 
-    @GetMapping
-    public ResponseEntity <List<Customer>> findAll() {
-        return new ResponseEntity(customerService.findAll(), HttpStatus.OK);
+    //FUNCIONA
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllCustomers() {
+        try {
+            List<Customer> findAll = customerService.getCustomers();
+            return new ResponseEntity<>(findAll, HttpStatus.OK);
+        } catch (UserNotFoundException ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
-
-    //cambios
 
 }
