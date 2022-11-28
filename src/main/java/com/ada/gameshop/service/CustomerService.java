@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -46,16 +47,6 @@ public class CustomerService {
         }
     }
 
-    public Customer getUserById(Long userId) {
-        Optional<Customer> customerOptional = customerRepository.findById(userId);
-
-        if (customerOptional.isPresent()) {
-            return customerOptional.get();
-        } else {
-            throw new UserNotFoundException();
-        }
-    }
-
     public Customer editUser(final CustomerDTO customer) {
         Optional<Customer> optionalCustomer = customerRepository.findById(customer.getCustomerId());
         if(optionalCustomer.isPresent()) {
@@ -67,6 +58,14 @@ public class CustomerService {
         }
         else
         throw new UserNotFoundException();
+    }
+
+    public void deleteCustomer(final Long id) {
+        Optional<Customer> customerOptional = customerRepository.findById(id);
+        if(customerOptional.isPresent()){
+            customerRepository.deleteById(id);
+        }
+        else throw new NoSuchElementException();
     }
 
 }

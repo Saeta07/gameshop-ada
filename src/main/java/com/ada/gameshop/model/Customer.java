@@ -6,8 +6,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.OneToMany;
@@ -35,7 +37,8 @@ public class Customer {
     private String email;
     @Column(nullable = false)
     private String telephone;
-    @OneToMany
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY,
+            cascade = CascadeType.REMOVE)
     private List<Transaction> transactions;
 
     public List<Transaction> getTransactions() {
@@ -51,5 +54,15 @@ public class Customer {
 
     public Long getId() {
         return id;
+    }
+
+    public final void addNewTransaction(final Transaction newTransaction) {
+
+        this.transactions.add(newTransaction);
+    }
+
+    public final void removeTransaction(final Transaction transaction){
+
+        this.transactions.remove(transaction);
     }
 }
