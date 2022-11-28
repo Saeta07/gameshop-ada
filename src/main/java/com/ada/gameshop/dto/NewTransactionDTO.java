@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,5 +13,6 @@ import java.time.LocalDate;
 @Setter
 public class NewTransactionDTO {
     private Long customerId;
-    private LocalDate date;
+    private String date;
+    private List<Long> productIdList;
 }
