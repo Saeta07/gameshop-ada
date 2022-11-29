@@ -9,11 +9,8 @@ import org.springframework.data.annotation.Id;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.time.LocalDate;
 
@@ -37,9 +34,6 @@ public class Product {
     private Developer developer;
     @Column(name = "release_date" ,nullable = false)
     private LocalDate releaseDate;
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "transaction_id", nullable = false)
-    private Transaction transaction;
 
     public void setId(Long id) {
         this.id = id;

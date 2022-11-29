@@ -17,6 +17,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -40,5 +41,27 @@ public class Transaction {
     @OneToMany
     @JoinColumn(name = "product_id", nullable = false)
     private List<Product> products;
+
+    public Transaction() {
+    }
+
+    public Transaction(LocalDate date, Customer customer) {
+        this.date = date;
+        this.customer = customer;
+    }
+
+    public Transaction(LocalDate date, Customer customer, List<Product> products) {
+        this.date = date;
+        this.customer = customer;
+        this.products = products;
+    }
+
+    public List<Product> getProducts() {
+        if (products == null) {
+            products = new ArrayList<>();
+        }
+
+        return products;
+    }
 
 }

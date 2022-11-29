@@ -56,8 +56,7 @@ public class CustomerService {
             optionalCustomer.get().setTelephone(customer.getTelephone());
             return optionalCustomer.get();
         }
-        else
-        throw new UserNotFoundException();
+        else throw new UserNotFoundException();
     }
 
     public void deleteCustomer(final Long id) {
