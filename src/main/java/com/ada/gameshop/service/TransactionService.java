@@ -1,6 +1,5 @@
 package com.ada.gameshop.service;
 
-
 import com.ada.gameshop.dto.TransactionDTO;
 import com.ada.gameshop.exception.ResourceNotFoundException;
 import com.ada.gameshop.model.Customer;
@@ -105,7 +104,5 @@ public class TransactionService {
             throw new NoSuchElementException("Transaction with ID: " + transactionId + " does not exist.");
         }
     }
-
-
 
 }
