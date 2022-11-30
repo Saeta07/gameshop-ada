@@ -12,6 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 public class TransactionDTO {
+
     private Long id;
     private String date;
     private List<ProductDTO> productDTOS;

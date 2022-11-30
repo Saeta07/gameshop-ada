@@ -1,6 +1,5 @@
 package com.ada.gameshop.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,7 +19,6 @@ import java.util.List;
 @Entity
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 @Builder
 @Table(name = "customer")
 public class Customer {
@@ -65,4 +63,24 @@ public class Customer {
 
         this.transactions.remove(transaction);
     }
+
+    public Customer(Long id, String name, String lastName,
+                  String email, String telephone) {
+        this.id = id;
+        this.name = name;
+        this.lastName = lastName;
+        this.email = email;
+        this.telephone = telephone;
+    }
+
+    public Customer(Long id, String name, String lastName,
+                    String email, String telephone, List<Transaction> transactions) {
+        this.id = id;
+        this.name = name;
+        this.lastName = lastName;
+        this.email = email;
+        this.telephone = telephone;
+        this.transactions = transactions;
+    }
+
 }

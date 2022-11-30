@@ -26,6 +26,7 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
+
     @PostMapping("/save")
     public final ResponseEntity<?> addUser(@RequestBody final CustomerDTO newCustomer) {
         try {
@@ -33,6 +34,21 @@ public class CustomerController {
         } catch (IllegalStateException ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @PostMapping("/save2")
+    public ResponseEntity create(@PathVariable(value = "customer-id") Long customerId,
+                                 @RequestBody CustomerDTO personDTO) {
+       CustomerDTO createdPersonDTO = customerService.create(personDTO);
+
+        return new ResponseEntity(personDTO.getCustomerId(), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{customerId}")
+    public ResponseEntity retrieveById(@PathVariable Long customerId) {
+        CustomerDTO customerDTO = customerService.retrieveById(customerId);
+
+        return new ResponseEntity(customerDTO, HttpStatus.OK);
     }
 
     @GetMapping("/all")
@@ -44,18 +60,6 @@ public class CustomerController {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
-
-    //TODO
-    // RETORNAR UN USUARIO
-    /*
-    @GetMapping("/{id}")
-    public final ResponseEntity<?> getUserInfo(@PathVariable("id") final String id) {
-        try {
-            return new ResponseEntity<>(userService.getUserInfo(id), HttpStatus.OK);
-        } catch (UserNotFoundException ex) {
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
-        }
-    }*/
 
     @PutMapping("/update")
     public final ResponseEntity<?> editUser(@RequestBody final CustomerDTO customerDTO) {

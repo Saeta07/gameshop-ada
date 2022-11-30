@@ -1,74 +1,90 @@
 package com.ada.gameshop.service;
 
-<<<<<<< HEAD
 import com.ada.gameshop.dto.ProductDTO;
+import com.ada.gameshop.exception.ResourceNotFoundException;
 import com.ada.gameshop.model.Product;
+import com.ada.gameshop.model.Transaction;
+import com.ada.gameshop.repository.ProductRepository;
+import com.ada.gameshop.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ProductService {
 
-    public List<ProductDTO> mapToDTOS(List<Product> products) {
+    private ProductRepository productRepository;
 
+    private TransactionRepository transactionRepository;
+
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+
+    public List<Product> getProducts() {
+        return productRepository.findAll();
+    }
+
+    public void create(ProductDTO productDTO, Long transactionId) {
+        Optional<Transaction> transaction = transactionRepository.findById(transactionId);
+        if (transaction.isEmpty()) {
+            throw new ResourceNotFoundException();
+        }
+
+        Product product = mapToEntity(productDTO);
+        product = productRepository.save(product);
+        productDTO.setId(product.getId());
+    }
+
+    public void create(List<ProductDTO> productDTOS) {
+        List<Product> products = productDTOS.stream()
+                .map(productDTO -> mapToEntity(productDTO))
+                .collect(Collectors.toList());
+        productRepository.saveAll(products);
+    }
+    public ProductDTO retrieveById(Long transactionId) {
+        if (!transactionRepository.existsById(transactionId)){
+            throw new ResourceNotFoundException();
+        }
+        Optional<Product> product = productRepository.findById(transactionId);
+        if (product.isEmpty()) {
+            throw new ResourceNotFoundException();
+        }
+        return mapToDTO(product.get());
+    }
+    private Product mapToEntity(ProductDTO productDTO) {
+        Product product = new Product(productDTO.getName(), productDTO.getPrice(),
+            productDTO.getDeveloper(), LocalDate.parse(productDTO.getReleaseDate(), DATE_TIME_FORMATTER),
+                productDTO.getCategory(), productDTO.getPegi(), productDTO.getPlatform(), productDTO.getType(),
+                productDTO.getGeneration());
+        return product;
+    }
+    public List<ProductDTO> mapToDTOS(List<Product> products) {
         return products.stream()
                 .map(product -> mapToDTO(product))
                 .collect(Collectors.toList());
     }
 
     private ProductDTO mapToDTO(Product product) {
-        ProductDTO productDTO = new ProductDTO(product.getName(),
-                product.getPrice(), product.getDeveloper(), product.getReleaseDate());
+        ProductDTO productDTO = new ProductDTO(product.getName(), product.getPrice(), product.getDeveloper(),
+                product.getReleaseDate().toString(), product.getCategory(), product.getPegi(), product.getPlatform(),
+                product.getType(), product.getGeneration());
         productDTO.setId(product.getId());
 
         return productDTO;
     }
-=======
-import com.ada.gameshop.model.Product;
-import com.ada.gameshop.repository.ProductRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
-public class ProductService {
-
-    private ProductRepository productRepository;
-
-    private Map<Product, Integer> products = new HashMap<>();
-
-    public Optional<Product> findById(Long id) {
-        return productRepository.findById(id);
-    }
-
-    public Page<Product> findAllProductsPageable(Pageable pageable) {
-        return productRepository.findAll(pageable);
-    }
-
-    public void addProduct(Product product) {
-        if (products.containsKey(product)) {
-            products.replace(product, products.get(product) + 1);
-        } else {
-            products.put(product, 1);
+    public void delete(Long productId) {
+        try {
+            productRepository.deleteById(productId);
+        } catch (EmptyResultDataAccessException e){
+            throw new ResourceNotFoundException();
         }
     }
 
-    public void removeProduct(Product product) {
-        if (products.containsKey(product)) {
-            if (products.get(product) > 1)
-                products.replace(product, products.get(product) - 1);
-            else if (products.get(product) == 1) {
-                products.remove(product);
-            }
-        }
-    }
-
-
->>>>>>> 51d99ac3142d5528ba289408d458a40f4d705d32
 }
