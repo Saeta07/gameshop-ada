@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 @RestController
@@ -64,7 +66,7 @@ public class CustomerController {
     @PutMapping("/update")
     public final ResponseEntity<?> editUser(@RequestBody final CustomerDTO customerDTO) {
         try {
-            return new ResponseEntity<>(customerService.editUser(customerDTO), HttpStatus.OK);
+            return new ResponseEntity<>(customerService.editCustomer(customerDTO), HttpStatus.OK);
         } catch (UserNotFoundException ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
         } catch (IllegalStateException ex) {
@@ -88,6 +90,14 @@ public class CustomerController {
         catch (NoSuchElementException | UserNotFoundException ex) {
             throw new UserNotFoundException();
         }
+    }
+
+    @PatchMapping("/{customerId}")
+    public ResponseEntity modify(@PathVariable Long customerId,
+                                 @RequestBody Map<String, Object> fieldsToModify) {
+        customerService.modify(customerId, fieldsToModify);
+
+        return new ResponseEntity(HttpStatus.OK);
     }
 
 }

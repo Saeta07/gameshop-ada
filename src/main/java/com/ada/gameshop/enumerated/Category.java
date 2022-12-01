@@ -4,8 +4,8 @@ public enum Category {
 
     SIMULATION,
     SCIFI,
-    TRHILLER,
     ACTION,
-    SHOOTER
-
+    SHOOTER,
+    SURVIVAL,
+    HORROR
 }

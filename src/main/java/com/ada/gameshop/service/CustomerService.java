@@ -13,6 +13,7 @@ import org.springframework.util.CollectionUtils;
 
 import javax.persistence.EntityExistsException;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -52,7 +53,7 @@ public class CustomerService {
         }
     }
 
-    public Customer editUser(final CustomerDTO customer) {
+    public Customer editCustomer(final CustomerDTO customer) {
         Optional<Customer> optionalCustomer = customerRepository.findById(customer.getCustomerId());
         if(optionalCustomer.isPresent()) {
             optionalCustomer.get().setName(customer.getName());
@@ -62,6 +63,16 @@ public class CustomerService {
             return optionalCustomer.get();
         }
         else throw new UserNotFoundException();
+    }
+
+    public void modify(Long customerId, Map<String, Object> fieldsToModify) {
+        Optional<Customer> person = customerRepository.findById(customerId);
+        if (person.isEmpty()) {
+            throw new ResourceNotFoundException();
+        }
+        Customer customerToModify = person.get();
+        fieldsToModify.forEach((key, value) -> customerToModify.modifyAttributeValue(key, value));
+        customerRepository.save(customerToModify);
     }
 
     public CustomerDTO create(CustomerDTO personDTO) {

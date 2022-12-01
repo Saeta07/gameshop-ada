@@ -2,13 +2,13 @@ package com.ada.gameshop.service;
 
 import com.ada.gameshop.dto.TransactionDTO;
 import com.ada.gameshop.exception.ResourceNotFoundException;
+import com.ada.gameshop.exception.UserNotFoundException;
 import com.ada.gameshop.model.Customer;
 import com.ada.gameshop.model.Transaction;
 import com.ada.gameshop.repository.CustomerRepository;
 import com.ada.gameshop.repository.TransactionRepository;
 import com.ada.gameshop.utils.Util;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
@@ -23,15 +23,13 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TransactionService {
 
-    @Autowired
-    private TransactionRepository transactionRepository;
+    private final TransactionRepository transactionRepository;
 
-    @Autowired
-    private CustomerRepository customerRepository;
+    private final CustomerRepository customerRepository;
 
-    private ProductService productService;
+    private final ProductService productService;
 
-    private Util util;
+    private final Util util;
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
@@ -42,7 +40,7 @@ public class TransactionService {
     public void create(TransactionDTO transactionDTO, Long customerId) {
         Optional<Customer> customer = customerRepository.findById(customerId);
         if (customer.isEmpty()) {
-            throw new ResourceNotFoundException();
+            throw new UserNotFoundException();
         }
 
         Transaction transaction = mapToEntity(transactionDTO, customer.get());
@@ -80,7 +78,7 @@ public class TransactionService {
     }
 
     private TransactionDTO mapToDTO(Transaction transaction) {
-        TransactionDTO transactionDTO = new TransactionDTO(transaction.getId(), transaction.getDate().toString(),
+        TransactionDTO transactionDTO = new TransactionDTO(transaction.getDate().toString(),
                 productService.mapToDTOS(transaction.getProducts()));
 
         return transactionDTO;

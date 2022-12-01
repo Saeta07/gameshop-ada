@@ -1,13 +1,11 @@
 package com.ada.gameshop.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
 
-@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
@@ -20,6 +18,10 @@ public class TransactionDTO {
     public TransactionDTO (String date, List<ProductDTO> productDTOS) {
         this.date= date;
         this.productDTOS = productDTOS;
+    }
+
+    public List<ProductDTO> getProductDTOS() {
+        return productDTOS;
     }
 
 }

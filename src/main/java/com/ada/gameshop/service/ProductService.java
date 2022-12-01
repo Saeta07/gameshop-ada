@@ -20,9 +20,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ProductService {
 
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
-    private TransactionRepository transactionRepository;
+    private final TransactionRepository transactionRepository;
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
@@ -30,34 +30,36 @@ public class ProductService {
         return productRepository.findAll();
     }
 
+
     public void create(ProductDTO productDTO, Long transactionId) {
         Optional<Transaction> transaction = transactionRepository.findById(transactionId);
         if (transaction.isEmpty()) {
             throw new ResourceNotFoundException();
         }
 
-        Product product = mapToEntity(productDTO);
+        Product product = mapToEntity(productDTO, transaction.get());
         product = productRepository.save(product);
         productDTO.setId(product.getId());
     }
 
-    public void create(List<ProductDTO> productDTOS) {
+    public void create(List<ProductDTO> productDTOS, Transaction transaction) {
         List<Product> products = productDTOS.stream()
-                .map(productDTO -> mapToEntity(productDTO))
+                .map(productDTO -> mapToEntity(productDTO, transaction))
                 .collect(Collectors.toList());
         productRepository.saveAll(products);
     }
-    public ProductDTO retrieveById(Long transactionId) {
+
+    public ProductDTO retrieveById(Long transactionId, Long productId) {
         if (!transactionRepository.existsById(transactionId)){
             throw new ResourceNotFoundException();
         }
-        Optional<Product> product = productRepository.findById(transactionId);
+        Optional<Product> product = productRepository.findById(productId);
         if (product.isEmpty()) {
             throw new ResourceNotFoundException();
         }
         return mapToDTO(product.get());
     }
-    private Product mapToEntity(ProductDTO productDTO) {
+    private Product mapToEntity(ProductDTO productDTO, Transaction transaction) {
         Product product = new Product(productDTO.getName(), productDTO.getPrice(),
             productDTO.getDeveloper(), LocalDate.parse(productDTO.getReleaseDate(), DATE_TIME_FORMATTER),
                 productDTO.getCategory(), productDTO.getPegi(), productDTO.getPlatform(), productDTO.getType(),

@@ -54,11 +54,6 @@ public class Customer {
         return id;
     }
 
-    public final void addNewTransaction(final Transaction newTransaction) {
-
-        this.transactions.add(newTransaction);
-    }
-
     public final void removeTransaction(final Transaction transaction){
 
         this.transactions.remove(transaction);
@@ -81,6 +76,23 @@ public class Customer {
         this.email = email;
         this.telephone = telephone;
         this.transactions = transactions;
+    }
+
+    public void modifyAttributeValue(String attributeName, Object newValue) {
+        switch (attributeName) {
+            case "name":
+                this.name = (String) newValue;
+                break;
+            case "last_name":
+                this.lastName = (String) newValue;
+                break;
+            case "email":
+                this.email = (String) newValue;
+                break;
+            case "telephone":
+                this.telephone = (String) newValue;
+                break;
+        }
     }
 
 }
