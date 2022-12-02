@@ -30,6 +30,13 @@ public class ProductService {
         return productRepository.findAll();
     }
 
+    public List<ProductDTO> retrieveAll() {
+        List<Product> productos = productRepository.findAll();
+        return productos.stream()
+                .map(producto -> mapToDTO(producto))
+                .collect(Collectors.toList());
+    }
+
 
     public void create(ProductDTO productDTO, Long transactionId) {
         Optional<Transaction> transaction = transactionRepository.findById(transactionId);

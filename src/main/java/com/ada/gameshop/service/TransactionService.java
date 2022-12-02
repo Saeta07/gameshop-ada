@@ -37,8 +37,8 @@ public class TransactionService {
         return transactionRepository.findAll();
     }
 
-    public void create(TransactionDTO transactionDTO, Long customerId) {
-        Optional<Customer> customer = customerRepository.findById(customerId);
+    public void create(TransactionDTO transactionDTO) {
+        Optional<Customer> customer = customerRepository.findById(transactionDTO.getId());
         if (customer.isEmpty()) {
             throw new UserNotFoundException();
         }
@@ -102,5 +102,4 @@ public class TransactionService {
             throw new NoSuchElementException("Transaction with ID: " + transactionId + " does not exist.");
         }
     }
-
 }
