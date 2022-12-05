@@ -2,7 +2,6 @@ package com.ada.gameshop.controller;
 
 import com.ada.gameshop.dto.CustomerDTO;
 import com.ada.gameshop.exception.UserNotFoundException;
-import com.ada.gameshop.model.Customer;
 import com.ada.gameshop.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,44 +28,41 @@ public class CustomerController {
     private final CustomerService customerService;
 
 
-    @PostMapping("/save")
-    public final ResponseEntity<?> addUser(@RequestBody final CustomerDTO newCustomer) {
-        try {
-            return new ResponseEntity<>(customerService.addNewCustomer(newCustomer), HttpStatus.CREATED);
-        } catch (IllegalStateException ex) {
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @PostMapping("/save2")
-    public ResponseEntity create(@PathVariable(value = "customer-id") Long customerId,
-                                 @RequestBody CustomerDTO personDTO) {
-       CustomerDTO createdPersonDTO = customerService.create(personDTO);
-
-        return new ResponseEntity(personDTO.getCustomerId(), HttpStatus.CREATED);
+    @PostMapping
+    public ResponseEntity create (@RequestBody CustomerDTO customerDTO) {
+        CustomerDTO createdCustomerDTO = customerService.create(customerDTO);
+        return new ResponseEntity(customerDTO.getCustomerId(), HttpStatus.CREATED);
     }
 
     @GetMapping("/{customerId}")
     public ResponseEntity retrieveById(@PathVariable Long customerId) {
         CustomerDTO customerDTO = customerService.retrieveById(customerId);
-
         return new ResponseEntity(customerDTO, HttpStatus.OK);
     }
 
     @GetMapping("/all")
     public ResponseEntity<?> getAllCustomers() {
         try {
-            List<Customer> findAll = customerService.getCustomers();
+            List<CustomerDTO> findAll = customerService.retrieveAll();
             return new ResponseEntity<>(findAll, HttpStatus.OK);
         } catch (UserNotFoundException ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
+    @PutMapping("/{personId}")
+    public ResponseEntity replace(@PathVariable Long customerId,
+                                  @RequestBody CustomerDTO customerDTO) {
+        customerService.replace(customerId, customerDTO);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
     @PutMapping("/update")
-    public final ResponseEntity<?> editUser(@RequestBody final CustomerDTO customerDTO) {
+    public final ResponseEntity<?> editUser(@PathVariable Long customerID,
+                                            @RequestBody final CustomerDTO customerDTO) {
         try {
-            return new ResponseEntity<>(customerService.editCustomer(customerDTO), HttpStatus.OK);
+            customerService.replace(customerID, customerDTO);
+            return new ResponseEntity<>(HttpStatus.OK);
         } catch (UserNotFoundException ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
         } catch (IllegalStateException ex) {

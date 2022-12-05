@@ -15,8 +15,10 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Getter
@@ -57,6 +59,9 @@ public class Product {
     @Column(nullable = false)
     private String generation;
 
+    @OneToMany(mappedBy = "product")
+    private List<TransactionDetail> transactionsDetail;
+
     public Product(String name, Float price, Developer developer,
                    LocalDate releaseDate, Category category, String pegi, Platform platform,
                    String type, String generation) {
@@ -69,6 +74,21 @@ public class Product {
         this.platform = platform;
         this.type = type;
         this.generation = generation;
+    }
+
+    public Product(String name, Float price, Developer developer,
+                   LocalDate releaseDate, Category category, String pegi, Platform platform,
+                   String type, String generation, List<TransactionDetail> transactionsDetail) {
+        this.name = name;
+        this.price = price;
+        this.developer = developer;
+        this.releaseDate = releaseDate;
+        this.category = category;
+        this.pegi = pegi;
+        this.platform = platform;
+        this.type = type;
+        this.generation = generation;
+        this.transactionsDetail = transactionsDetail;
     }
 
 }

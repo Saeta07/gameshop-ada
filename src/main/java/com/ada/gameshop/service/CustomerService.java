@@ -1,6 +1,7 @@
 package com.ada.gameshop.service;
 
 import com.ada.gameshop.dto.CustomerDTO;
+import com.ada.gameshop.exception.ExistingResourceException;
 import com.ada.gameshop.exception.ResourceNotFoundException;
 import com.ada.gameshop.exception.UserNotFoundException;
 import com.ada.gameshop.model.Customer;
@@ -8,14 +9,14 @@ import com.ada.gameshop.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
-import javax.persistence.EntityExistsException;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -33,26 +34,20 @@ public class CustomerService {
         this.customerRepository = customerRepository;
     }
 
-    public List<Customer> getCustomers() {
-        return customerRepository.findAll();
+    public List<CustomerDTO> retrieveAll() {
+        List<Customer> customers = customerRepository.findAll();
+        return customers.stream()
+                .map(customer-> mapToDTO(customer))
+                .collect(Collectors.toList());
     }
 
-    public Customer addNewCustomer(final CustomerDTO newCustomer) {
-        if (!customerRepository.existsById(newCustomer.getCustomerId())) {
-            return customerRepository.save(
-                    Customer.builder()
-                            .id(newCustomer.getCustomerId())
-                            .name(newCustomer.getName())
-                            .lastName(newCustomer.getLastName())
-                            .email(newCustomer.getEmail())
-                            .telephone(newCustomer.getTelephone())
-                            .build());
-        } else {
-            log.warn("Customer already registered");
-            throw new IllegalStateException(newCustomer.getName() + " is already registered");
-        }
-    }
+    public CustomerDTO create(CustomerDTO customerDTO) {
+        Customer customer = mapToEntity(customerDTO);
+        checkForExistingCliente((long) Math.toIntExact(customer.getId()));
+        customer = customerRepository.save(customer);
 
+        return customerDTO;
+    }
     public Customer editCustomer(final CustomerDTO customer) {
         Optional<Customer> optionalCustomer = customerRepository.findById(customer.getCustomerId());
         if(optionalCustomer.isPresent()) {
@@ -65,27 +60,6 @@ public class CustomerService {
         else throw new UserNotFoundException();
     }
 
-    public void modify(Long customerId, Map<String, Object> fieldsToModify) {
-        Optional<Customer> person = customerRepository.findById(customerId);
-        if (person.isEmpty()) {
-            throw new ResourceNotFoundException();
-        }
-        Customer customerToModify = person.get();
-        fieldsToModify.forEach((key, value) -> customerToModify.modifyAttributeValue(key, value));
-        customerRepository.save(customerToModify);
-    }
-
-    public CustomerDTO create(CustomerDTO personDTO) {
-        Customer customer = mapToEntity(personDTO);
-        checkForExistingCustomer(customer.getId());
-        customer = customerRepository.save(customer);
-        if (!CollectionUtils.isEmpty(personDTO.getTransactionDTOS())) {
-            transactionService.create(personDTO.getTransactionDTOS(), customer);
-        }
-
-        return personDTO;
-    }
-
     public CustomerDTO retrieveById(Long id) {
         Optional<Customer> customer = customerRepository.findById(id);
         if (customer.isEmpty()) {
@@ -95,24 +69,53 @@ public class CustomerService {
         return mapToDTO(customer.get());
     }
 
-    private void checkForExistingCustomer(Long customerId) {
-        if (customerRepository.existsById(customerId)) {
-            throw new EntityExistsException();
-        }
-    }
-
     private Customer mapToEntity(CustomerDTO customerDTO) {
-        Customer person = new Customer(customerDTO.getCustomerId(), customerDTO.getName(),
-                customerDTO.getLastName(), customerDTO.getEmail(), customerDTO.getTelephone());
-
-        return person;
+        Customer customer = new Customer(customerDTO.getCustomerId(), customerDTO.getName(), customerDTO.getLastName(),
+                customerDTO.getEmail(), customerDTO.getTelephone());
+        return customer;
     }
 
     private CustomerDTO mapToDTO(Customer customer) {
-        CustomerDTO personDTO = new CustomerDTO(customer.getId(), customer.getName(),
-                customer.getLastName(), customer.getEmail(), customer.getTelephone(), transactionService.mapToDTOS(customer.getTransactions()));
+        CustomerDTO customerDTO = new CustomerDTO(customer.getId(), customer.getName(), customer.getLastName(),
+                customer.getEmail(), customer.getTelephone());
+        return customerDTO;
+    }
 
-        return personDTO;
+    private void checkForExistingCliente(Long customerId) {
+        if (customerRepository.existsById(customerId)) {
+            throw new ExistingResourceException();
+        }
+    }
+
+    public void modify(Long customerId, Map<String, Object> fieldsToModify) {
+        Optional<Customer> person = customerRepository.findById(customerId);
+        if (person.isEmpty()) {
+            throw new ResourceNotFoundException();
+        }
+        Customer personToModify = person.get();
+        fieldsToModify.forEach((key, value) -> personToModify.modifyAttributeValue(String.valueOf(key), value));
+        customerRepository.save(personToModify);
+    }
+
+    public void replace(Long customerId, CustomerDTO customerDTO) {
+        Optional<Customer> customer = customerRepository.findById(customerId);
+        if (customer.isEmpty()) {
+            throw new ResourceNotFoundException();
+        }
+        Customer customerToReplace = customer.get();
+        customerToReplace.setName(customerDTO.getName());
+        customerToReplace.setLastName(customerDTO.getLastName());
+        customerToReplace.setEmail(customerDTO.getEmail());
+        customerToReplace.setTelephone(customerDTO.getTelephone());
+        customerRepository.save(customerToReplace);
+    }
+
+    public void delete(Long customerId) {
+        try {
+            customerRepository.deleteById(customerId);
+        } catch (EmptyResultDataAccessException e) {
+            throw new ResourceNotFoundException();
+        }
     }
 
     public void deleteCustomer(final Long id) {

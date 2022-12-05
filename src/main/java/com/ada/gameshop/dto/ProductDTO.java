@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -24,6 +26,7 @@ public class ProductDTO {
     private Platform platform;
     private String type;
     private String generation;
+    private List<TransactionDetailDTO> transactionDetailDTOS;
 
     public ProductDTO (String name, Float price, Developer developer,
                        String releaseDate, Category category,
@@ -38,5 +41,21 @@ public class ProductDTO {
         this. platform = platform;
         this.type = type;
         this.generation = generation;
+    }
+
+    public ProductDTO (String name, Float price, Developer developer,
+                       String releaseDate, Category category,
+                       String pegi, Platform platform,
+                       String type, String generation, List<TransactionDetailDTO> transactionDetailDTOS) {
+        this.name = name;
+        this.price = price;
+        this.developer = developer;
+        this.releaseDate = releaseDate;
+        this.category = category;
+        this.pegi = pegi;
+        this. platform = platform;
+        this.type = type;
+        this.generation = generation;
+        this.transactionDetailDTOS = transactionDetailDTOS;
     }
 }

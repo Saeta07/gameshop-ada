@@ -27,8 +27,6 @@ public class TransactionService {
 
     private final CustomerRepository customerRepository;
 
-    private final ProductService productService;
-
     private final Util util;
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy");
@@ -37,8 +35,8 @@ public class TransactionService {
         return transactionRepository.findAll();
     }
 
-    public void create(TransactionDTO transactionDTO, Long customerId) {
-        Optional<Customer> customer = customerRepository.findById(customerId);
+    public void create(TransactionDTO transactionDTO) {
+        Optional<Customer> customer = customerRepository.findById(transactionDTO.getCustomerId());
         if (customer.isEmpty()) {
             throw new UserNotFoundException();
         }
@@ -48,12 +46,12 @@ public class TransactionService {
         transactionDTO.setId(transaction.getId());
     }
 
-    public void create(List<TransactionDTO> transactionDTOS, Customer customer) {
-        List<Transaction> transactions = transactionDTOS.stream()
-                .map(transactionDTO -> mapToEntity(transactionDTO, customer))
-                .collect(Collectors.toList());
-        transactionRepository.saveAll(transactions);
-    }
+//    public void create(List<TransactionDTO> transactionDTOS, Customer customer) {
+//        List<Transaction> transactions = transactionDTOS.stream()
+//                .map(transactionDTO -> mapToEntity(transactionDTO, customer))
+//                .collect(Collectors.toList());
+//        transactionRepository.saveAll(transactions);
+//    }
 
     public TransactionDTO retrieveById(Long customerId, Long transactionId) {
         if (!customerRepository.existsById(customerId)){
@@ -67,7 +65,8 @@ public class TransactionService {
     }
 
     private Transaction mapToEntity(TransactionDTO transactionDTO, Customer customer) {
-        Transaction transaction = new Transaction(LocalDate.parse(transactionDTO.getDate(), DATE_TIME_FORMATTER), customer);
+        Transaction transaction = new Transaction(transactionDTO.getId(), LocalDate.parse(transactionDTO.getDate(),
+                DATE_TIME_FORMATTER), customer);
         return transaction;
     }
 
@@ -78,10 +77,9 @@ public class TransactionService {
     }
 
     private TransactionDTO mapToDTO(Transaction transaction) {
-        TransactionDTO transactionDTO = new TransactionDTO(transaction.getDate().toString(),
-                productService.mapToDTOS(transaction.getProducts()));
-
-        return transactionDTO;
+        TransactionDTO facturaDTO = new TransactionDTO(transaction.getId(), transaction.getDate().toString(),
+                transaction.getCustomer().getId());
+        return facturaDTO;
     }
 
     public void delete(Long transactionId) {

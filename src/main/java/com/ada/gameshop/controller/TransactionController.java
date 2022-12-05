@@ -25,21 +25,18 @@ public class TransactionController {
     private final TransactionService transactionService;
 
     @PostMapping("/save")
-    public ResponseEntity createTransaction(@PathVariable Long customerId,
-                                 @RequestBody TransactionDTO transactionDTO) {
+    public ResponseEntity createTransaction(@RequestBody TransactionDTO transactionDTO) {
         try {
-            transactionService.create(transactionDTO, customerId);
+            transactionService.create(transactionDTO);
             return new ResponseEntity(transactionDTO.getId(), HttpStatus.CREATED);
         }catch (IllegalStateException ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
-    @PostMapping("/save2")
-    public ResponseEntity create(@PathVariable Long customerId,
-                                 @RequestBody TransactionDTO transactionDTO) {
-        transactionService.create(transactionDTO, customerId);
-
+    @PostMapping
+    public ResponseEntity create(@RequestBody TransactionDTO transactionDTO) {
+        transactionService.create(transactionDTO);
         return new ResponseEntity(transactionDTO.getId(), HttpStatus.CREATED);
     }
 
