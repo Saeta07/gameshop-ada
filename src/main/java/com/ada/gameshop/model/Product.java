@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.Id;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,6 +14,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.time.LocalDate;
@@ -28,7 +28,6 @@ import java.util.List;
 @Table(name = "product")
 public class Product {
 
-    @javax.persistence.Id
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -76,9 +75,10 @@ public class Product {
         this.generation = generation;
     }
 
-    public Product(String name, Float price, Developer developer,
+    public Product(Long id, String name, Float price, Developer developer,
                    LocalDate releaseDate, Category category, String pegi, Platform platform,
-                   String type, String generation, List<TransactionDetail> transactionsDetail) {
+                   String type, String generation) {
+        this.id = id;
         this.name = name;
         this.price = price;
         this.developer = developer;
@@ -88,7 +88,6 @@ public class Product {
         this.platform = platform;
         this.type = type;
         this.generation = generation;
-        this.transactionsDetail = transactionsDetail;
     }
 
 }

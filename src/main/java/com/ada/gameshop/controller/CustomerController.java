@@ -30,8 +30,12 @@ public class CustomerController {
 
     @PostMapping
     public ResponseEntity create (@RequestBody CustomerDTO customerDTO) {
-        CustomerDTO createdCustomerDTO = customerService.create(customerDTO);
-        return new ResponseEntity(customerDTO.getCustomerId(), HttpStatus.CREATED);
+        try {
+            CustomerDTO createdCustomerDTO = customerService.create(customerDTO);
+            return new ResponseEntity<>(customerDTO.getCustomerId(), HttpStatus.CREATED);
+        } catch (IllegalStateException ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping("/{customerId}")
@@ -50,7 +54,7 @@ public class CustomerController {
         }
     }
 
-    @PutMapping("/{personId}")
+    @PutMapping("/{customerId}")
     public ResponseEntity replace(@PathVariable Long customerId,
                                   @RequestBody CustomerDTO customerDTO) {
         customerService.replace(customerId, customerDTO);
@@ -58,10 +62,10 @@ public class CustomerController {
     }
 
     @PutMapping("/update")
-    public final ResponseEntity<?> editUser(@PathVariable Long customerID,
+    public final ResponseEntity<?> editUser(@PathVariable Long customerId,
                                             @RequestBody final CustomerDTO customerDTO) {
         try {
-            customerService.replace(customerID, customerDTO);
+            customerService.replace(customerId, customerDTO);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (UserNotFoundException ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);

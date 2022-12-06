@@ -6,6 +6,7 @@ import com.ada.gameshop.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,13 +24,12 @@ public class ProductController {
     private final ProductService productService;
 
     @PostMapping
-    public ResponseEntity create(@PathVariable Long transactionId,
-                                 @RequestBody ProductDTO productDTO) {
+    public ResponseEntity create(@RequestBody ProductDTO productDTO) {
         try {
-            productService.create(productDTO, transactionId);
-            return new ResponseEntity(productDTO.getId(), HttpStatus.CREATED);
+            productService.create(productDTO);
+            return new ResponseEntity(productDTO.getProductId(), HttpStatus.CREATED);
         }catch (IllegalStateException ex) {
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(productDTO.getProductId(), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -41,5 +41,12 @@ public class ProductController {
         } catch (IllegalStateException ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
         }
+    }
+
+    @DeleteMapping("/{productId}")
+    public ResponseEntity delete(@PathVariable Long productId) {
+        productService.delete(productId);
+
+        return new ResponseEntity("Product successfully deleted",HttpStatus.OK);
     }
 }

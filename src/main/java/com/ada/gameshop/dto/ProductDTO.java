@@ -3,6 +3,7 @@ package com.ada.gameshop.dto;
 import com.ada.gameshop.enumerated.Category;
 import com.ada.gameshop.enumerated.Developer;
 import com.ada.gameshop.enumerated.Platform;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,10 +17,12 @@ import java.util.List;
 @Setter
 public class ProductDTO {
 
-    private Long id;
+    @JsonAlias("id")
+    private Long productId;
     private String name;
     private Float price;
     private Developer developer;
+    @JsonAlias("release_date")
     private String releaseDate;
     private Category category;
     private String pegi;
@@ -43,10 +46,10 @@ public class ProductDTO {
         this.generation = generation;
     }
 
-    public ProductDTO (String name, Float price, Developer developer,
+    public ProductDTO (Long productId, String name, Float price, Developer developer,
                        String releaseDate, Category category,
                        String pegi, Platform platform,
-                       String type, String generation, List<TransactionDetailDTO> transactionDetailDTOS) {
+                       String type, String generation) {
         this.name = name;
         this.price = price;
         this.developer = developer;
@@ -56,6 +59,5 @@ public class ProductDTO {
         this. platform = platform;
         this.type = type;
         this.generation = generation;
-        this.transactionDetailDTOS = transactionDetailDTOS;
     }
 }

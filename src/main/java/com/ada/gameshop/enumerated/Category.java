@@ -7,5 +7,6 @@ public enum Category {
     ACTION,
     SHOOTER,
     SURVIVAL,
-    HORROR
+    HORROR,
+    ADVENTURE
 }

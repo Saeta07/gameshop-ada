@@ -24,6 +24,7 @@ public class TransactionController {
 
     private final TransactionService transactionService;
 
+
     @PostMapping("/save")
     public ResponseEntity createTransaction(@RequestBody TransactionDTO transactionDTO) {
         try {
@@ -58,11 +59,16 @@ public class TransactionController {
         }
     }
 
+    @GetMapping
+    public ResponseEntity retrieve() {
+        return new ResponseEntity(transactionService.retrieveAll(), HttpStatus.OK);
+    }
+
     @DeleteMapping("/{transactionId}")
     public ResponseEntity delete(@PathVariable Long transactionId) {
         transactionService.delete(transactionId);
 
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity("Transaction successfully deleted",HttpStatus.OK);
     }
 
 }

@@ -4,5 +4,7 @@ public enum Developer {
     MICROSOFT,
     KONAMI,
     CAPCOM,
-    SONY
+    SONY,
+    BUNGIE,
+    NINTENDO
 }

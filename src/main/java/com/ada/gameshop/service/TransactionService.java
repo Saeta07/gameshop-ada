@@ -46,12 +46,12 @@ public class TransactionService {
         transactionDTO.setId(transaction.getId());
     }
 
-//    public void create(List<TransactionDTO> transactionDTOS, Customer customer) {
-//        List<Transaction> transactions = transactionDTOS.stream()
-//                .map(transactionDTO -> mapToEntity(transactionDTO, customer))
-//                .collect(Collectors.toList());
-//        transactionRepository.saveAll(transactions);
-//    }
+    public List<TransactionDTO> retrieveAll() {
+        List<Transaction> transactions = transactionRepository.findAll();
+        return transactions.stream()
+                .map(transaction -> mapToDTO(transaction))
+                .collect(Collectors.toList());
+    }
 
     public TransactionDTO retrieveById(Long customerId, Long transactionId) {
         if (!customerRepository.existsById(customerId)){
@@ -77,9 +77,9 @@ public class TransactionService {
     }
 
     private TransactionDTO mapToDTO(Transaction transaction) {
-        TransactionDTO facturaDTO = new TransactionDTO(transaction.getId(), transaction.getDate().toString(),
+        TransactionDTO transactionDTO = new TransactionDTO(transaction.getId(), transaction.getDate().toString(),
                 transaction.getCustomer().getId());
-        return facturaDTO;
+        return transactionDTO;
     }
 
     public void delete(Long transactionId) {
@@ -97,7 +97,7 @@ public class TransactionService {
             user.removeTransaction(transactionOptional.get());
             transactionRepository.deleteById(transactionId);
         } else {
-            throw new NoSuchElementException("Transaction with ID: " + transactionId + " does not exist.");
+            throw new NoSuchElementException("Transaction with ID: " + transactionId + " doesn´t exist");
         }
     }
 
